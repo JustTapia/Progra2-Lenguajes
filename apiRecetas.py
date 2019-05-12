@@ -25,8 +25,18 @@ def token_required(f):
 
 @app.route('/get_recetas')
 @token_required
-def protected():
-	return jsonify({'mesage' : 'Contenido bloqueado detras de Token'})
+def getRecetas():
+	return jsonify({'mesage' : 'Recetas detras de Token'})
+
+@app.route('/show_receta')
+@token_required
+def showReceta():
+	return jsonify({'mesage' : 'Contenido de receta con Token'})
+
+@app.route('/create_receta')
+@token_required
+def createReceta():
+	return jsonify({'mesage' : 'Receta a crear con Token'})
 
 
 @app.route('/login')
