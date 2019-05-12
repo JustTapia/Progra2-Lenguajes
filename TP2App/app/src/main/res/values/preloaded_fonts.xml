@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/abeezee_italic</item>
+        <item>@font/acme</item>
+        <item>@font/allan</item>
+        <item>@font/arya</item>
+        <item>@font/belleza</item>
+    </array>
+</resources>
