@@ -1,1 +1,1 @@
-web: flask apiRecetas.py
+web: python -py apiRecetas.py
