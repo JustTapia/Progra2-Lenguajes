@@ -1,1 +1,1 @@
-web: python -py apiRecetas.py
+web: python apiRecetas.py
