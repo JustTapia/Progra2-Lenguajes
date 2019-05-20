@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">TP2App</string>
+    <string name="app_name">RecetasMaker</string>
+
+    <string-array name="wos">
+        <item>Mostrar todos</item>
+        <item>Nombre</item>
+        <item>Tipo</item>
+        <item>Ingrediente</item>
+    </string-array>
 </resources>

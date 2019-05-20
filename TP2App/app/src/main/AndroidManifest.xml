@@ -5,12 +5,17 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".IniciarSesion"></activity>
+        <activity android:name=".CrearCuenta"/>
+        <activity android:name=".InfoReceta" />
+        <activity android:name=".AgregarRecetas"/>
+        <activity android:name=".VerRecetas" />
         <activity android:name=".MenuPrincipal">
+        </activity>
+        <activity android:name=".IniciarSesion">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
