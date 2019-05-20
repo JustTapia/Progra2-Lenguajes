@@ -1,1 +1,1 @@
-web: python apiRecetas.py
+web: gunicorn apiRecetas:app
