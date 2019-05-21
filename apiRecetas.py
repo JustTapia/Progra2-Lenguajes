@@ -70,7 +70,7 @@ def showReceta():
 
 	return jsonify(recetaJSON)
 
-@app.route('/create_receta', methods=['POST']) #/create_receta, no está listo
+@app.route('/create_receta', methods=['POST','GET']) #/create_receta, no está listo
 @token_required
 def createReceta():
 	return jsonify({'mesage' : 'Receta a crear con Token'})
@@ -85,7 +85,7 @@ def auth_required(f):
 		res = cursor.fetchone()
 		print(res)
 		if (res == []):
-			return abort("El usuario o la contraseña son incorrectos")
+			return jsonofy({'message' : "El usuario o la contraseña son incorrectos"})
 		else: 
 			cipher_suite = Fernet(llave_cifra)
 			contrasena = res[1].encode()
@@ -93,7 +93,7 @@ def auth_required(f):
 			contrasena = contrasena.decode()
 
 			if (contrasena != request.args.get('contrasena')):
-				return abort("El usuario o la contraseña son incorrectos")
+				return jsonify({'mesage' : 'El usuario o la contraseña con incorrectos'})
 		cursor.close()
 		return f(*args, **kwargs)
 	return decorated
@@ -105,7 +105,7 @@ def login():
 	token = jwt.encode({'user': correo, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},app.config['SECRET_KEY'])
 	return jsonify({'token': token.decode('UTF-8')})
 
-@app.route('/singUp',methods=['POST']) # /singUp?correo=correofalso@gmail.com&contrasena=helado123
+@app.route('/singUp',methods=['POST','GET']) # /singUp?correo=correofalso@gmail.com&contrasena=helado123
 def singUp():
 	correo = request.args.get('correo')
 	contrasena = request.args.get('contrasena')
@@ -123,6 +123,7 @@ def singUp():
 		cursor.close()
 		return jsonify({'message': 'El usuario ha sido registrado'})
 	except: #Falla si el correo ya existe en la base de datos
+		conn.rollback()
 		return jsonify({'message': 'El usuario ya está registrado'})
 
 
