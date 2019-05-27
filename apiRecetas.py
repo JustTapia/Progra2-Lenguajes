@@ -80,7 +80,8 @@ def buscarRecetas_nombre(nombre): #Busca la receta con el nombre dado(No puede h
 	res = res.replace("'","\"")
 	res = json.loads(res)#Transforma el string en un diccionario
 
-	return res
+	return res #Si no encuentra ninguna receta con ese nombre, le mismo comando de ssh devuelve un json con el mensaje de error
+	#Formato enseñado si encuentra rceta: {'Nombre':'nombre','Tipo':'tipoX','Pasos': ['paso1','paso2'],'Ingredientes':['ing','ing2','ing3'],'Fotos':['url','url2','url3']}
 
 
 
@@ -180,7 +181,7 @@ def getRecetas():#Obtiene todos los nombres de las recetas
 def buscarRecetas():#Busca recetas según el criterio de búsqueda (cBusqueda) y nombre del lo que quiere buscar (strBusqueda)
 	cBusqueda = request.args.get('cBusqueda')
 	strBusqueda = request.args.get('strBusqueda')
-	if(cBusqueda =="Nombre"):#Enseña la receta
+	if(cBusqueda =="Nombre"):#Enseña la receta en Json
 		recetas = buscarRecetas_nombre(strBusqueda)
 	elif(cBusqueda == "Tipo"):
 		recetas = buscarRecetas_tipo(strBusqueda)
@@ -228,7 +229,7 @@ def auth_required(f): #comprueba el login
 				contrasena = contrasena.decode()
 
 				if (contrasena != request.args.get('contrasena')):
-					return jsonify({'message' : 'El usuario o la contrasena con incorrectos'})
+					return jsonify({'message' : 'El usuario o la contrasena son incorrectos'})
 			cursor.close()
 			return f(*args, **kwargs)
 		except:
