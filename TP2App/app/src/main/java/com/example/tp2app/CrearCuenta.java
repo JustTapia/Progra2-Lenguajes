@@ -1,6 +1,7 @@
 package com.example.tp2app;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.example.tp2app.API.RestClient;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 
 public class CrearCuenta extends AppCompatActivity {
 
@@ -36,8 +44,8 @@ public class CrearCuenta extends AppCompatActivity {
                 if(user.equals("") || contra.equals("")){
                     Toast.makeText(CrearCuenta.this, "Debe ingresar un usuario y contraseña", Toast.LENGTH_SHORT).show();
                 }else {
-                    Toast.makeText(CrearCuenta.this, "OK", Toast.LENGTH_SHORT).show();
-                    CrearCuenta.this.finish();
+                    new SignUpOperation().execute(user, contra);
+                    //CrearCuenta.this.finish();
                 }
 
             }
@@ -55,12 +63,35 @@ public class CrearCuenta extends AppCompatActivity {
         }
     }
 
+    private class SignUpOperation extends AsyncTask<String, Void, String> {
 
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        @Override
+        protected String doInBackground(String... params) {
+            RestClient rc = new RestClient();
+            String response = "ERROR";
+            try {
+                response = rc.signUpUser(params[0], params[1]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            Toast.makeText(CrearCuenta.this, result, Toast.LENGTH_SHORT).show();
+            /*try {
+                JSONObject jsonObj = new JSONObject(result);
+                if(jsonObj.has("token")) {
+                    String token = jsonObj.getString("token");
+                }else if (jsonObj.has("message")){
+                    String mensaje = jsonObj.getString("message");
+                    Toast.makeText(CrearCuenta.this, mensaje, Toast.LENGTH_SHORT).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }*/
+        }
     }
+
 }
