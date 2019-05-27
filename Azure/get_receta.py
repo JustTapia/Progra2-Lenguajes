@@ -3,12 +3,15 @@ import sys
 
 def main(busqueda,script):
 	prolog = Prolog()
-	script = script[0].split(".")
-	script = scri
-	print (script)
+	script = script.split(".")
+	script = script[:-1]
+
 	for linea in script:
 		prolog.assertz(linea)
-	prueba = list(prolog.query("buscarReceta("+busqueda+",Tipo,Ing,Pasos,Fotos)"))
+	prueba = list(prolog.query("buscarReceta(" + busqueda + ",Tipo,Ing,Pasos,Fotos)"))
+	if (prueba == []):
+		print ({'message': 'No existe ninguna receta con ese nombre'})
+		return
 	res = {}
 
 	i = 0
