@@ -30,6 +30,10 @@ def main(busqueda,script):
 	while i < len(prueba[0]["Fotos"]):
 		temp = str(prueba[0]["Fotos"][i])
 		prueba[0]["Fotos"][i] = temp
+		j = len(prueba[0]["Fotos"][i])-1
+		while(prueba[0]["Fotos"][i][j] != "_"):
+			j -= 1
+		prueba[0]["Fotos"][i] = prueba[0]["Fotos"][i][:j]+"."+prueba[0]["Fotos"][i][j+1:]
 		i = i+1
 
 	res["Nombre"] = busqueda
