@@ -24,7 +24,6 @@ def getRecetas_Prolog(): #Obtiene la base de conocimientos de s3
 	archivo = objeto.get()
 	archivo = archivo["Body"]
 	archivo = archivo.read().decode()
-	archivo = archivo.replace("\n","")#quita los saltos de página
 	archivo = archivo.replace("!","\x21")#se necesita cambiar los ! por \x21 para poder usarlos en la línea de comandos
 
 	return archivo
@@ -53,7 +52,6 @@ def subir_receta(nombre,data):
 
 	s3_client=boto3.resource('s3')
 	objeto = s3_client.Object('recetas-imagenes','prolog/recetas.pl')
-	archivo = archivo.replace(".",".\n")
 	archivo = archivo[:-1]
 	archivo = data + "\n" + archivo
 	objeto.put(Body=archivo)#Subir el archivo
@@ -202,10 +200,10 @@ def createReceta():#Añade la receta a la base de conocimientos, {'nombre': 'nom
 	parametros = json.loads(datos)
 	nombre = parametros["nombre"]
 	tipo = parametros["tipo"]
-	ing = str(parametros["ingredientes"]).replace("'","").replace(" ","")
-	pasos = str(parametros["pasos"]).replace("'","").replace(" ","")
-	fotos = str(parametros["fotos"]).replace("'","").replace(" ","")
-	data = "receta(" + nombre + "," + tipo + "," + ing + "," + pasos + "," + fotos + ")."
+	ing = str(parametros["ingredientes"]).replace(" ","")
+	pasos = str(parametros["pasos"]).replace(" ","")
+	fotos = str(parametros["fotos"]).replace(" ","")
+	data = "receta('" + nombre + "','" + tipo + "'," + ing + "," + pasos + "," + fotos + ")."
 
 	mensaje = subir_receta(nombre,data)
 	return jsonify(mensaje)

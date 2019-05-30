@@ -3,7 +3,7 @@ import sys
 
 def main(script):
 	prolog = Prolog()
-	script = script.split(".")
+	script = script.split(".\n")
 	script = script[:-1]
 	for linea in script:
 		prolog.assertz(linea)
