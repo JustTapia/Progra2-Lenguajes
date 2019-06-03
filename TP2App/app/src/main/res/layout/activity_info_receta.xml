@@ -114,7 +114,7 @@
                         app:fontFamily="@font/belleza" />
 
                     <TableLayout
-                        android:id="@+id/tableLayout"
+                        android:id="@+id/tableLayoutIng"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="40dp"
@@ -134,7 +134,7 @@
                         app:fontFamily="@font/belleza" />
 
                     <TableLayout
-                        android:id="@+id/tableLayout2"
+                        android:id="@+id/tableLayoutInst"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="40dp"

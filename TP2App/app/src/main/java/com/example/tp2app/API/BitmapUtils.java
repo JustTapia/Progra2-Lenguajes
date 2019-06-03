@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v4.content.FileProvider;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -19,107 +18,77 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+//Clase que maneja el archivo de una foto tomada
 
 
 public class BitmapUtils {
-    private static final String FILE_PROVIDER_AUTHORITY = "com.example.android.fileprovider";
+
     /**
-
-     * Resamples the captured photo to fit the screen for better memory usage.
-
-     *
-
-     * @param context   The application context.
-
-     * @param imagePath The path of the photo to be resampled.
-
-     * @return The resampled bitmap
-
+     * Ajusta la foto a la pantalla para mejor uso de la memoria
+     * @param context   Contexto de la aplicacion
+     * @param imagePath Path de la foto
+     * @return La imagen reajustada
      */
-
     public static Bitmap resamplePic(Context context, String imagePath) {
-        // Get device screen size information
+        //Informacion de la pantalla del dispositivo
         DisplayMetrics metrics = new DisplayMetrics();
         WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         manager.getDefaultDisplay().getMetrics(metrics);
         int targetH = metrics.heightPixels;
         int targetW = metrics.widthPixels;
-        // Get the dimensions of the original bitmap
+        //Dimensiones del bitmap original
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(imagePath, bmOptions);
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
-        // Determine how much to scale down the image
+        // Cuanto escalar la imagen
         int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
-        // Decode the image file into a Bitmap sized to fill the View
+        //Deodifica la imagen en un Bitmap
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
         return BitmapFactory.decodeFile(imagePath);
     }
 
     /**
-
-     * Creates the temporary image file in the cache directory.
-
-     *
-
-     * @return The temporary image file.
-
-     * @throws IOException Thrown if there is an error creating the file
-
+     * Guarda la imagen temporalmente en la cache
+     * @return La imagen temporal
+     * @throws IOException Si se produce error al crear el archivo
      */
-
     public static File createTempImageFile(Context context) throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
                 Locale.getDefault()).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = context.getExternalCacheDir();
         return File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
+                imageFileName,
+                ".jpg",
+                storageDir
         );
     }
 
 
 
     /**
-
-     * Deletes image file for a given path.
-
-     *
-
-     * @param context   The application context.
-
-     * @param imagePath The path of the photo to be deleted.
-
+     * Borra una imagen dado un path (la imagen del caché)
+     * @param context   Contexto de la aplicación
+     * @param imagePath Path de la imagen a borrar
      */
-
     public static boolean deleteImageFile(Context context, String imagePath) {
-        // Get the file
         File imageFile = new File(imagePath);
-        // Delete the image
+        //Borra la imagen
         boolean deleted = imageFile.delete();
-        // If there is an error deleting the file, show a Toast
+        //Toast si ocurre un error borrando la imagen
         if (!deleted) {
-            String errorMessage = "ERROR";
+            Toast.makeText(context, "ERROR", Toast.LENGTH_SHORT).show();
         }
         return deleted;
     }
 
     /**
-
-     * Helper method for adding the photo to the system photo gallery so it can be accessed
-
-     * from other apps.
-
-     *
-
-     * @param imagePath The path of the saved image
-
+     * Agrega la foto en la galería del dispositivo
+     * @param imagePath Path de la foto a guardar
      */
-
     private static void galleryAddPic(Context context, String imagePath) {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(imagePath);
@@ -129,33 +98,25 @@ public class BitmapUtils {
     }
 
     /**
-
      * Helper method for saving the image.
-
-     *
-
      * @param context The application context.
-
      * @param image   The image to be saved.
-
      * @return The path of the saved image.
-
      */
-
     public static String saveImage(Context context, Bitmap image) {
         String savedImagePath = null;
-        // Create the new file in the external storage
+        //Crea un nuevo archivo en el storage externo
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
                 Locale.getDefault()).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + ".jpg";
         File storageDir = new File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                        + "/MyCamera");
+                        + "/MyCamera"); //lo guarda en el album 'My Camera' (lo crea si no existe)
         boolean success = true;
         if (!storageDir.exists()) {
             success = storageDir.mkdirs();
         }
-        // Save the new Bitmap
+        //Guarda el Bitmap
         if (success) {
             File imageFile = new File(storageDir, imageFileName);
             savedImagePath = imageFile.getAbsolutePath();
@@ -166,24 +127,9 @@ public class BitmapUtils {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            // Add the image to the system gallery
             galleryAddPic(context, savedImagePath);
-            // Show a Toast with the save location
-            // String savedMessage = context.getString(R.string.saved_message, savedImagePath);
         }
         return savedImagePath;
     }
-
-    /**
-
-     * Helper method for sharing an image.
-
-     *
-
-     * @param context   The image context.
-
-     * @param imagePath The path of the image to be shared.
-
-     */
 
 }

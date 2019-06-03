@@ -1,8 +1,6 @@
 package com.example.tp2app;
 
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,10 +18,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CrearCuenta extends AppCompatActivity {
 
     private Toolbar toolbar;
+    Pattern pattern = Pattern.compile("[a-zA-Z0-9\\s]*"); //No se permiten caracteres especiales
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,21 +38,24 @@ public class CrearCuenta extends AppCompatActivity {
         Button button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                EditText userField = findViewById(R.id.editText_usuario);
+                EditText userField = findViewById(R.id.editText_email);
                 String user = userField.getText().toString();
-                EditText contraField = findViewById(R.id.editText_contrasena);
+                EditText contraField = findViewById(R.id.editText_password);
                 String contra = contraField.getText().toString();
+                Matcher matcher = pattern.matcher(contra);
                 if(user.equals("") || contra.equals("")){
                     Toast.makeText(CrearCuenta.this, "Debe ingresar un usuario y contraseña", Toast.LENGTH_SHORT).show();
+                }else if(!matcher.matches()){
+                    Toast.makeText(CrearCuenta.this, "No se permiten caracteres especiales", Toast.LENGTH_SHORT).show();
                 }else {
                     new SignUpOperation().execute(user, contra);
-                    //CrearCuenta.this.finish();
                 }
 
             }
         });
     }
 
+    //Back button
    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -63,6 +67,9 @@ public class CrearCuenta extends AppCompatActivity {
         }
     }
 
+    /**
+     * Thread para comunicarse con la API y crear una cuenta
+     */
     private class SignUpOperation extends AsyncTask<String, Void, String> {
 
         @Override
@@ -79,18 +86,18 @@ public class CrearCuenta extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            Toast.makeText(CrearCuenta.this, result, Toast.LENGTH_SHORT).show();
-            /*try {
+            try {
                 JSONObject jsonObj = new JSONObject(result);
-                if(jsonObj.has("token")) {
-                    String token = jsonObj.getString("token");
-                }else if (jsonObj.has("message")){
+                if (jsonObj.has("message")){
                     String mensaje = jsonObj.getString("message");
                     Toast.makeText(CrearCuenta.this, mensaje, Toast.LENGTH_SHORT).show();
+                    if(mensaje.equals("El usuario ha sido registrado")){
+                        finish();
+                    }
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-            }*/
+            }
         }
     }
 

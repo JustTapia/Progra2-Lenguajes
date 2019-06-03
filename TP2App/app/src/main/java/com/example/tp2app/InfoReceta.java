@@ -1,6 +1,5 @@
 package com.example.tp2app;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -12,7 +11,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,53 +20,82 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 
 public class InfoReceta extends AppCompatActivity {
 
     private Toolbar toolbar;
-    LinearLayout linearLayout;
+    private LinearLayout linearLayout;
+    private String tipo;
+    private String nombreRec;
+    private ArrayList<String> ing = new ArrayList<>();
+    private ArrayList<String> pasos = new ArrayList<>();
+    private ArrayList<String> fotos = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info_receta);
+
+        Bundle b = getIntent().getExtras();
+        if(b != null) {
+            tipo = b.getString("tipo");
+            nombreRec = b.getString("nombre");
+            ing = b.getStringArrayList("ingredientes");
+            pasos = b.getStringArrayList("pasos");
+            fotos = b.getStringArrayList("fotos");
+        }
+
+        linearLayout = findViewById(R.id.layout_imagen);
+        TextView nombre = findViewById(R.id.textView17);
+        nombreRec = nombreRec.replace('_', ' ');
+        nombreRec = Character.toUpperCase(nombreRec.charAt(0)) + nombreRec.substring(1);
+        nombre.setText(nombreRec);
+        TextView tip = findViewById(R.id.textView16);
+        tipo = tipo.replace('_', ' ');
+        tipo = Character.toUpperCase(tipo.charAt(0)) + tipo.substring(1);
+        tip.setText(tipo);
+        TableLayout tabIng = findViewById(R.id.tableLayoutIng);
+        TableLayout tabInst = findViewById(R.id.tableLayoutInst);
+
+        iniciarTablas(ing, tabIng);
+        iniciarTablas(pasos, tabInst);
+
+        for(int i = 0; i<fotos.size(); i++){
+            ImageView imageView = new ImageView(getApplicationContext());
+            imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            String url = fotos.get(i);
+            new DownloadImageFromInternet(imageView)
+                    .execute(url);
+        }
+
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowTitleEnabled(false);
 
-        init();
-
-        linearLayout = findViewById(R.id.layout_imagen);
-        ImageView imageView = new ImageView(getApplicationContext());
-        imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        new DownloadImageFromInternet(imageView)
-                .execute("https://s3.amazonaws.com/recetas-imagenes/new/5924df87-e6b1-49d9-9288-fa17d0713749.jpg");
-
     }
 
-    public void init() {
-        TableLayout stk = findViewById(R.id.tableLayout);
-        TableRow tbrow0 = new TableRow(this);;
-        TextView tv1 = new TextView(this);
-        tv1.setText(" Product ");
-        tv1.setTextColor(Color.WHITE);
-        tbrow0.addView(tv1);
-        stk.addView(tbrow0);
-        for (int i = 0; i < 50; i++) {
+    //Display de los ingredientes/instrucciones en una tabla
+    public void iniciarTablas(ArrayList<String> info, TableLayout stk){
+        for (int i = 0; i < info.size(); i++) {
+            final String nombre = info.get(i);
             TableRow tbrow = new TableRow(this);
             tbrow.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT));
-            tbrow.setBackgroundResource (android.R.drawable.edit_text);
             TextView t2v = new TextView(this);
-            t2v.setText("Product " + i);
+            String nombreDisplay = nombre.replace('_', ' ');
+            nombreDisplay = Character.toUpperCase(nombreDisplay.charAt(0)) + nombreDisplay.substring(1);
+            t2v.setText(nombreDisplay);
             t2v.setTextColor(Color.BLACK);
             t2v.setGravity(Gravity.CENTER);
             tbrow.addView(t2v);
             stk.addView(tbrow);
         }
+
     }
 
+    //Back Button
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
@@ -80,12 +107,15 @@ public class InfoReceta extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Thread para descargar las imagenes guardadas en AWS y las coloca en un imageView
+     */
     private class DownloadImageFromInternet extends AsyncTask<String, Void, Bitmap> {
         ImageView imageView;
 
         public DownloadImageFromInternet(ImageView imageView) {
             this.imageView = imageView;
-            Toast.makeText(getApplicationContext(), "Please wait, it may take a few minute...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Por favor espere...", Toast.LENGTH_SHORT).show();
         }
 
         protected Bitmap doInBackground(String... urls) {
