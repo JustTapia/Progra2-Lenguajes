@@ -116,10 +116,8 @@ public class AgregarRecetas extends AppCompatActivity {
             public void onClick(View v) {
                 String nombre = name.getText().toString();
                 nombre = Character.toLowerCase(nombre.charAt(0)) + nombre.substring(1); //Cambia la primera letra a minuscula (por Prolog)
-                nombre = nombre.replace(' ', '_'); //Reemplaza espacios por underscores
                 String tipo = type.getText().toString();
                 tipo = Character.toLowerCase(tipo.charAt(0)) + tipo.substring(1);
-                tipo = tipo.replace(' ', '_');
                 Matcher matcher = pattern.matcher(nombre);
                 Matcher matcherT = pattern.matcher(tipo);
                 if(nombre.equals("") || tipo.equals("")){
@@ -127,6 +125,8 @@ public class AgregarRecetas extends AppCompatActivity {
                 }else if(!matcher.matches() || !matcherT.matches()){
                     Toast.makeText(AgregarRecetas.this, "No se permiten caracteres especiales", Toast.LENGTH_SHORT).show();
                 }else {
+                    nombre = nombre.replace(' ', '_'); //Reemplaza espacios por underscores
+                    tipo = tipo.replace(' ', '_');
                     String ingredientes = editText_Ing.getText().toString();
                     String instrucciones = editText_Inst.getText().toString();
                     crearLista(ingredientes, ingred);
