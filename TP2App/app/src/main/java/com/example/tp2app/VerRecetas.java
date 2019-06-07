@@ -159,13 +159,18 @@ public class VerRecetas extends AppCompatActivity {
             }else {
                 try {
                     JSONObject jsonObj = new JSONObject(result);
-                    JSONArray myJSONArray = jsonObj.getJSONArray("Nombres");
-                    ArrayList<String> arrayListNombres = new ArrayList<>(myJSONArray.length());
-                    for (int i = 0; i < myJSONArray.length(); i++) {
-                        arrayListNombres.add(myJSONArray.getString(i));
+                    if (jsonObj.has("message")) {
+                        String mensaje = jsonObj.getString("message");
+                        Toast.makeText(VerRecetas.this, mensaje, Toast.LENGTH_SHORT).show();
+                    } else {
+                        JSONArray myJSONArray = jsonObj.getJSONArray("Nombres");
+                        ArrayList<String> arrayListNombres = new ArrayList<>(myJSONArray.length());
+                        for (int i = 0; i < myJSONArray.length(); i++) {
+                            arrayListNombres.add(myJSONArray.getString(i));
+                        }
+                        init(arrayListNombres);
                     }
-                    init(arrayListNombres);
-                } catch (JSONException e) {
+                } catch(JSONException e){
                     e.printStackTrace();
                 }
             }
@@ -257,7 +262,6 @@ public class VerRecetas extends AppCompatActivity {
                 Toast.makeText(VerRecetas.this, "Token no autorizado", Toast.LENGTH_SHORT).show();
             }
             try {
-
                 JSONObject jsonObj = new JSONObject(result);
                 if(jsonObj.has("message")){
                     String mensaje = jsonObj.getString("message");
