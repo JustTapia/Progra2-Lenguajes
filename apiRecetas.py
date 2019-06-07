@@ -1,8 +1,6 @@
 from flask import Flask, jsonify, request, make_response, abort
 from functools import wraps
 from cryptography.fernet import Fernet
-from multiprocessing.pool import ThreadPool
-from multiprocessing import Pool
 import jwt
 import datetime
 import os
@@ -76,8 +74,10 @@ def buscarRecetas_nombre(nombre): #Busca la receta con el nombre dado(No puede h
 
 	res = res[:-1]
 	res = res.replace("'","\"")
-	res = json.loads(res)#Transforma el string en un diccionario
-
+	try:
+		res = json.loads(res)#Transforma el string en un diccionario
+	except:
+		return {'message':'No existe ninguna receta con ese nombre'}
 	return res #Si no encuentra ninguna receta con ese nombre, le mismo comando de ssh devuelve un json con el mensaje de error
 	#Formato enseñado si encuentra rceta: {'Nombre':'nombre','Tipo':'tipoX','Pasos': ['paso1','paso2'],'Ingredientes':['ing','ing2','ing3'],'Fotos':['url','url2','url3']}
 
@@ -98,11 +98,11 @@ def buscarRecetas_tipo(tipo):#Busca en la base de conocimientos las recetas que 
 
 	ssh.close()	
 
-	if (res == "[]\n"):
-		return {'message': 'No existe ninguna receta con ese tipo'}
-
 	res = res[2:-3]
 	res = res.split("', '") #Convierte el string en una lista
+
+	if (res == [""]):
+		return {"message": "No existe ninguna receta con ese tipo"}
 
 	recetasJSON = {"Nombres": res}
 	return recetasJSON
@@ -122,12 +122,11 @@ def buscarRecetas_ing(ing):#Busca en la base de conocimientos las recetas que te
 	res = salida.read().decode() # Aqui recupera los datos, pero sólo obtiene prints()
 
 	ssh.close()	
-
-	if (res == "[]\n"):
-		return {'message': 'No existe ninguna receta con ese ingrediente'}
-
 	res = res[2:-3]
 	res = res.split("', '") #Convierte el string en una lista
+
+	if (res == [""]):
+		return {'message': 'No existe ninguna receta con ese ingrediente'}
 
 	recetasJSON = {"Nombres": res}
 	return recetasJSON
@@ -169,6 +168,9 @@ def getRecetas():#Obtiene todos los nombres de las recetas
 	ssh.close()	
 	res = res[2:-3]
 	res = res.split("', '") #Convierte el string en una lista
+
+	if (res == [""]):
+		return jsonify({'message': 'No hay recetas'})
 
 	recetasJSON = {"Nombres" : res}
 	return jsonify(recetasJSON)
